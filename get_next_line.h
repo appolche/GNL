@@ -19,6 +19,6 @@ char *ft_strtrim(char *src, int n);
 //Programs utilizing I/O multiplex or non-blocking I/O on Mac OS X are by default restricted to 1024 file descriptors per process
 //ulimit -a :file descriptors  10240
 
-#  define BUFF_SIZE 45
+#  define BUFFER_SIZE 1
 
 #endif
