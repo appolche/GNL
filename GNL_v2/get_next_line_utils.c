@@ -14,6 +14,8 @@ char	*ft_strcpy(char *dst, const char *src)
 {
 	int	i;
 
+	if (!src)
+		return (NULL);
 	i = 0;
 	while (src[i])
 	{
@@ -44,7 +46,9 @@ char	*ft_strdup(const char *src)
 {
 	char	*dst;
 
-	dst = malloc(sizeof(char) * (ft_strlen(src) + 1));
+	if (!src)
+		return (NULL);
+	dst = malloc(sizeof(*dst) * (ft_strlen(src) + 1));
 	if (!dst)
 		return (NULL);
 	dst = ft_strcpy(dst, src);

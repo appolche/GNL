@@ -12,12 +12,8 @@ char	*ft_strcpy(char *dst, const char *src);
 char	*ft_strdup(const char *src);
 char	*ft_strjoin(char *s1, const char *s2);
 
-# ifndef MAX_FD
-#  define MAX_FD 10240
-# endif
-
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
+#  define BUFFER_SIZE 10000
 # endif
 
 #endif
