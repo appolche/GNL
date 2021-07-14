@@ -8,12 +8,16 @@
 char	*get_next_line(int fd);
 size_t	ft_strlen(const char *s);
 int		ft_strchr(char *str, int c);
-char	*ft_strcpy(char *dst, const char *src);
 char	*ft_strdup(const char *src);
 char	*ft_strjoin(char *s1, const char *s2);
-
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 10000
+char	*ft_tmpcpy(char *tmp, const char *line, int n);
+/*
+# ifndef MAX_FD
+#  define MAX_FD 10240
 # endif
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1
+# endif
+*/
 #endif
