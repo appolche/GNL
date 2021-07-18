@@ -1,82 +1,116 @@
 #include "get_next_line.h"
-#include <stdio.h>
 
-static char *ft_tmpcpy(char *tmp, const char *line, int n)
+static char	*ft_strtrim(char *src, int n)
 {
-    int i;
+	char	*dst;
+	int		i;
+	int		len;
 
-    i = 0;
-    while (n)
-    {
-        tmp[i] = line[i];
-        i++;
-        n--;
-    }
-    tmp[i] = '\0';
-    return (tmp);
+	i = 0;
+	len = ft_strlen(src);
+	dst = malloc((len - n + 1) * sizeof(char));
+	if (!dst)
+	{
+		free (src);
+		return (NULL);
+	}
+	while (src[n])
+		dst[i++] = src[n++];
+	dst[i] = '\0';
+	if (src)
+	{
+		free(src);
+		src = NULL;
+	}
+	return (dst);
 }
 
-static char *line_return(char *tmp, char **line, int n, char **buffer)
+static char	*tmp_line_return(char **line, int n, char **buffer)
 {
-    tmp = malloc((n + 1) * sizeof(char));
-    tmp = ft_tmpcpy(tmp, *line, n);
-    *line = ft_strtrim(*line, n);
-    free(*buffer);
-    return (tmp);
+	char		*tmp;
+
+	tmp = NULL;
+	tmp = malloc((n + 1) * sizeof(char));
+	if (!tmp)
+		return (NULL);
+	tmp = ft_tmpcpy(tmp, *line, n);
+	*line = ft_strtrim(*line, n);
+	if (!*line)
+	{
+		free (*buffer);
+		free (tmp);
+		return (NULL);
+	}
+	if (*buffer)
+		free(*buffer);
+	return (tmp);
 }
 
-static char *ft_fill_line(char *line, char *buffer)
+static char	*ft_line_check(char **line, char **buffer)
 {
-    if (!line)
-        line = ft_strdup(buffer);
-    else
-        line = ft_strjoin(line, buffer);
-    return (line);
+	int			n;
+	char		*tmp;
+
+	tmp = NULL;
+	n = 0;
+	n = ft_strchr(*line, '\n');
+	if (n >= 0)
+		return (tmp_line_return(&(*line), n, &(*buffer)));
+	else
+	{
+		tmp = ft_strdup(*line);
+		free (*line);
+		*line = NULL;
+		if (*buffer)
+			free(*buffer);
+		return (tmp);
+	}
 }
 
-char *get_next_line(int fd)
+static char	*ft_read_processing(int byte_read, char **buffer, char **line)
 {
-    static char *line;
-    char *buffer;
-    char *tmp;
-    int bite_was_read;
-    int n;
-
-    tmp = NULL;
-    buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-    if (fd < 0 || fd >= MAX_FD || BUFFER_SIZE <= 0 || !buffer)
-        return (NULL);
-    while ((bite_was_read = read(fd, buffer, BUFFER_SIZE)) > 0)
-    {
-        buffer[bite_was_read] = '\0';
-        line = ft_fill_line(line, buffer);
-        if ((n = ft_strchr(line, '\n')) >= 0)
-            return (tmp = line_return(tmp, &line, n, &buffer));
-        // free(buffer);
-    }
-    if (line && (n = ft_strchr(line, '\n')) >= 0)
-        return (tmp = line_return(tmp, &line, n, &buffer));
-    if (buffer)
-        free(buffer);
-    return (NULL);
+	if (byte_read < 0)
+	{
+		if (*buffer)
+			free(*buffer);
+		return (NULL);
+	}
+	if (*line && byte_read == 0)
+		return (ft_line_check(&(*line), &(*buffer)));
+	else
+	{
+		if (*buffer)
+			free(*buffer);
+		if (*line)
+			free(*line);
+	}
+	return (NULL);
 }
 
-int main()
+char	*get_next_line(int fd)
 {
-    int fd = 0;
-    char *gnl;
+	static char	*line;
+	char		*buffer;
+	int			n;
+	int			byte_read;
 
-    fd = open("test.txt", O_RDONLY);
-    while ((gnl = get_next_line(fd)) != NULL)
-    {
-        printf("%s", gnl);
-        free(gnl);
-        gnl = NULL;
-    }
-    sleep(1000);
-    free(gnl);
-    gnl = NULL;
-    //  gnl = get_next_line(fd);
-    //      printf("%s", gnl);
-    return (0);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buffer)
+		return (NULL);
+	byte_read = read(fd, buffer, BUFFER_SIZE);
+	while (byte_read > 0)
+	{
+		buffer[byte_read] = '\0';
+		if (!line)
+			line = ft_strdup(buffer);
+		else
+			line = ft_strjoin(line, buffer);
+		n = ft_strchr(line, '\n');
+		if (n >= 0)
+			return (tmp_line_return(&line, n, &buffer));
+		byte_read = read(fd, buffer, BUFFER_SIZE);
+	}
+	return (ft_read_processing(byte_read, &buffer, &line));
 }
