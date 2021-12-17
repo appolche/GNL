@@ -10,10 +10,7 @@ static char	*ft_strtrim(char *src, int n)
 	len = ft_strlen(src);
 	dst = malloc((len - n + 1) * sizeof(char));
 	if (!dst)
-	{
-		free (src);
-		return (NULL);
-	}
+		return(NULL);
 	while (src[n])
 		dst[i++] = src[n++];
 	dst[i] = '\0';
@@ -35,12 +32,6 @@ static char	*tmp_line_return(char **line, int n, char **buffer)
 		return (NULL);
 	tmp = ft_tmpcpy(tmp, *line, n);
 	*line = ft_strtrim(*line, n);
-	if (!*line)
-	{
-		free (*buffer);
-		free (tmp);
-		return (NULL);
-	}
 	if (*buffer)
 		free(*buffer);
 	return (tmp);
@@ -67,7 +58,7 @@ static char	*ft_line_check(char **line, char **buffer)
 	}
 }
 
-static char	*ft_read_processing(int byte_read, char **buffer, char **line)
+static char *ft_read_processing(int byte_read, char **buffer, char **line)
 {
 	if (byte_read < 0)
 	{
@@ -77,13 +68,8 @@ static char	*ft_read_processing(int byte_read, char **buffer, char **line)
 	}
 	if (*line && byte_read == 0)
 		return (ft_line_check(&(*line), &(*buffer)));
-	else
-	{
-		if (*buffer)
-			free(*buffer);
-		if (*line)
-			free(*line);
-	}
+	if (*buffer)
+		free(*buffer);
 	return (NULL);
 }
 
@@ -93,17 +79,16 @@ char	*get_next_line(int fd)
 	char		*buffer;
 	int			n;
 	int			byte_read;
-
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+	
+	n = 0;
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
+	if (fd < 0 || BUFFER_SIZE <= 0 || !buffer)
 		return (NULL);
 	byte_read = read(fd, buffer, BUFFER_SIZE);
 	while (byte_read > 0)
 	{
 		buffer[byte_read] = '\0';
-		if (!line)
+		if (!line || *line == '\0')
 			line = ft_strdup(buffer);
 		else
 			line = ft_strjoin(line, buffer);

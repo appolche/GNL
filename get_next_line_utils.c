@@ -34,10 +34,8 @@ char	*ft_strdup(const char *src)
 	char	*dst;
 
 	i = 0;
-	if (*src == '\0')
-		return (NULL);
 	dst = malloc(sizeof(char) * (ft_strlen(src) + 1));
-	if (!dst)
+	if (!dst || !src)
 		return (NULL);
 	while (src[i])
 	{
@@ -57,7 +55,7 @@ char	*ft_strjoin(char *s1, const char *s2)
 	i = 0;
 	j = 0;
 	if (!s1 || !s2)
-		return (NULL);
+		return (0);
 	s3 = malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
 	if (!s3)
 		return (NULL);
